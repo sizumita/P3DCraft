@@ -6,6 +6,7 @@ import processing.opengl.PGraphics3D
 class Controller(private val parent: PApplet) {
     private val moveSpeed = 10f
     private val rotationSpeed = 0.02f
+    private val mouseRotationSpeed = 0.002f
     private var isPressedW = false
     private var isPressedA = false
     private var isPressedS = false
@@ -56,42 +57,62 @@ class Controller(private val parent: PApplet) {
         changeKeyState(false, key, keyCode)
     }
 
+    fun mouseControl(dx: Int, dy: Int) {
+        val m = PMatrix3D()
+        m.rotateX(mouseRotationSpeed * dy * -1);
+        m.rotateY(mouseRotationSpeed * dx)
+
+        val c = (parent.g as PGraphics3D).camera.get()
+        c.preApply(m)
+
+        c.invert()
+
+        val ex: Float = c.m03
+        val ey: Float = c.m13
+        val ez: Float = c.m23
+        val cx: Float = -c.m02 + ex
+        val cy: Float = -c.m12 + ey
+        val cz: Float = -c.m22 + ez
+
+        parent.camera( ex, ey, ez, cx, cy, cz, 0f, 1f, 0f )
+    }
+
     public fun keyControl() {
         if ( !parent.keyPressed ) return
 
-        val M = PMatrix3D()
+        val m = PMatrix3D()
         val speed = this.moveSpeed
 
         if ( isPressedW ) {
-            M.translate( 0f, 0f, speed );
+            m.translate( 0f, 0f, speed );
         }
         if ( isPressedS ) {
-            M.translate( 0f, 0f, -speed );
+            m.translate( 0f, 0f, -speed );
         }
         if ( isPressedA ) {
-            M.translate( speed, 0f, 0f );
+            m.translate( speed, 0f, 0f );
         }
         if ( isPressedD ) {
-            M.translate( -speed, 0f, 0f );
+            m.translate( -speed, 0f, 0f );
         }
         if ( isPressedSpace ) {
-            M.translate( 0f, speed, 0f );
+            m.translate( 0f, speed, 0f );
         }
         if ( isPressedShift ) {
-            M.translate( 0f, -speed, 0f );
+            m.translate( 0f, -speed, 0f );
         }
         if ( isPressedUp ) {
-            M.rotateX(rotationSpeed);
+            m.rotateX(rotationSpeed);
         } else if ( isPressedDown ) {
-            M.rotateX(-rotationSpeed);
+            m.rotateX(-rotationSpeed);
         } else if ( isPressedRight ) {
-            M.rotateY(rotationSpeed);
+            m.rotateY(rotationSpeed);
         } else if ( isPressedLeft ) {
-            M.rotateY(-rotationSpeed);
+            m.rotateY(-rotationSpeed);
         }
 
         val c = (parent.g as PGraphics3D).camera.get()
-        c.preApply(M)
+        c.preApply(m)
 
         c.invert()
 

@@ -10,11 +10,11 @@ enum class Face {
      */
     Bottom,
     /**
-     * Z+
+     * Z-
      */
     North,
     /**
-     * Z-
+     * Z+
      */
     South,
     /**

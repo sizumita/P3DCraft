@@ -26,6 +26,18 @@ class World {
                 blocks[x][0][z] = Block(BlockId.Bedrock)
             }
         }
+        for (x in 0 until X_LENGTH) {
+            for (y in 1 .. 20) {
+                for (z in 0 until Z_LENGTH) {
+                    blocks[x][y][z] = Block(BlockId.Stone)
+                }
+            }
+            for (y in 21..30) {
+                for (z in 0 until Z_LENGTH) {
+                    blocks[x][y][z] = Block(BlockId.Dirt)
+                }
+            }
+        }
     }
 
     fun putBlock(x: Int, y: Int, z: Int, block: Block) {
