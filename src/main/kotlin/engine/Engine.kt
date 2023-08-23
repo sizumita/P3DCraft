@@ -2,6 +2,7 @@ package engine
 
 import com.jogamp.newt.opengl.GLWindow
 import processing.core.PApplet
+import processing.core.PVector
 import processing.event.KeyEvent
 import processing.event.MouseEvent
 import java.awt.Robot
@@ -27,6 +28,10 @@ class Engine(var window: PApplet) {
 
     fun keyReleased(event: KeyEvent) {
         this.player.keyReleased(event)
+    }
+    fun mousePressed(event: MouseEvent) {
+        val face = player.getLookingAt() ?: return
+        world.putBlockNextToFace(face.x, face.y, face.z, face.face, Block(BlockId.Bedrock))
     }
 
     fun mouseMoved(event: MouseEvent) {

@@ -1,8 +1,9 @@
 package engine
 
-import com.jogamp.newt.opengl.GLWindow
 import engine.enums.Key
+import engine.structs.RealFace
 import processing.core.PMatrix3D
+import processing.core.PVector
 import processing.event.KeyEvent
 import processing.event.MouseEvent
 import processing.opengl.PGraphics3D
@@ -13,10 +14,72 @@ class Player(private val engine: Engine) {
         private const val mouseRotationSpeed = 0.002f
         private const val moveSpeed = 10f
     }
+
     private val pressedKeys = EnumSet.noneOf(Key::class.java)
 
-    fun mousePressed(event: MouseEvent) {
+    fun unProject(): PVector? {
+        val projection = (engine.window.g as PGraphics3D).projection
+        val modelView = (engine.window.g as PGraphics3D).modelview
+        val viewport = PMatrix3D()
+        viewport.m00 = engine.window.width / 2F
+        viewport.m03 = engine.window.width / 2F
+        viewport.m11 = -engine.window.height / 2F
+        viewport.m13 = engine.window.height / 2F
 
+        viewport.apply(projection)
+        viewport.apply(modelView)
+        viewport.invert()
+
+        val out = FloatArray(4)
+        viewport.mult(floatArrayOf(engine.window.width / 2F, engine.window.height / 2F, -1F, 1F), out)
+        if (out[3] == 0F) {
+            return null
+        }
+        return PVector(
+            out[0] / out[3], out[1] / out[3], out[2] / out[3]
+        )
+    }
+
+    fun getEyePosition(): PVector {
+        val c = (engine.window.g as PGraphics3D).camera.get()
+        c.invert()
+        return PVector(c.m03, c.m13, c.m23)
+    }
+
+    fun getLookingAt(): RealFace? {
+        val eye = getEyePosition()
+        val faces = engine.world.getNearFaces(eye.x.toInt() / 100, eye.y.toInt() / 100 * (-1), eye.z.toInt() / 100)
+        val screenPoint = unProject() ?: return null
+
+        val detectedFaces = mutableListOf<RealFace>()
+
+        for (face in faces) {
+            val w = screenPoint.copy()
+            val n = face.getNVector()
+            val f = when (face.face) {
+                Face.Bottom -> PVector(face.x * 100F + 50, face.y * -100F + 100, face.z * 100F + 50)
+                Face.Top -> PVector(face.x * 100F + 50, face.y * -100F, face.z * 100F + 50)
+                Face.South -> PVector(face.x * 100F + 50, face.y * -100F + 50, face.z * 100F + 100)
+                Face.North -> PVector(face.x * 100F + 50, face.y * -100F + 50, face.z * 100F)
+                Face.West -> PVector(face.x * 100F, face.y * -100F + 50, face.z * 100F + 50)
+                Face.East -> PVector(face.x * 100F + 100, face.y * -100F + 50, face.z * 100F + 50)
+            }
+            f.sub(eye)
+            w.sub(eye)
+            w.mult(n.dot(f) / n.dot(w))
+            w.add(eye)
+
+            if (face.isPointContains(w)) {
+                detectedFaces.add(face)
+            }
+        }
+        if (detectedFaces.isEmpty()) return null
+//        println("detected ${detectedFaces.size}")
+        detectedFaces.sortBy {
+            PVector(it.x.toFloat(), it.y.toFloat(), it.z.toFloat()).dist(eye)
+        }
+        detectedFaces.reverse()
+        return detectedFaces[0]
     }
 
     fun mouseMoved(dx: Int, dy: Int) {
@@ -36,7 +99,7 @@ class Player(private val engine: Engine) {
         val cy: Float = -c.m12 + ey
         val cz: Float = -c.m22 + ez
 
-        engine.window.camera( ex, ey, ez, cx, cy, cz, 0f, 1f, 0f )
+        engine.window.camera(ex, ey, ez, cx, cy, cz, 0f, 1f, 0f)
     }
 
     fun keyPressed(event: KeyEvent) {
@@ -86,6 +149,6 @@ class Player(private val engine: Engine) {
         val cy: Float = -c.m12 + ey
         val cz: Float = -c.m22 + ez
 
-        engine.window.camera( ex, ey, ez, cx, cy, cz, 0f, 1f, 0f )
+        engine.window.camera(ex, ey, ez, cx, cy, cz, 0f, 1f, 0f)
     }
 }

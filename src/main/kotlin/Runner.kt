@@ -41,6 +41,11 @@ class Runner : PApplet() {
         engine.mouseMoved(event)
     }
 
+    override fun mousePressed(event: MouseEvent?) {
+        if (event == null || !focused) return
+        engine.mousePressed(event)
+    }
+
     override fun draw() {
 //        if (frameCount == 10) {
 //            val frame = (getSurface().native as GLWindow)
@@ -49,9 +54,9 @@ class Runner : PApplet() {
 //        }
         background(0)
         engine.world.putBlock(0, 31, 0, Block(BlockId.Dirt))
-        engine.world.putBlock(0, 32, 0, Block(BlockId.Dirt))
-        engine.world.putBlock(1, 31, 0, Block(BlockId.Dirt))
-        engine.world.putBlock(0, 31, 1, Block(BlockId.Stone))
+//        engine.world.putBlock(0, 32, 0, Block(BlockId.Dirt))
+//        engine.world.putBlock(1, 31, 0, Block(BlockId.Dirt))
+//        engine.world.putBlock(0, 31, 1, Block(BlockId.Stone))
         engine.draw()
     }
 }
