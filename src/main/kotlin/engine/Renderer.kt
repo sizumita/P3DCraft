@@ -22,9 +22,11 @@ class Renderer(private var engine: Engine) {
             return
         }
         // TODO: テクスチャ
+        engine.window.fill(block.id.rgb.first, block.id.rgb.second, block.id.rgb.third)
+
         if (!faces.contains(Face.Top)) {
             engine.window.pushMatrix()
-            engine.window.fill(255)
+//            engine.window.fill(255)
             engine.window.beginShape()
             engine.window.vertex(x*100F, y*-100F, z*100F)
             engine.window.vertex(x*100F+100, y*-100F, z*100F)
@@ -35,7 +37,7 @@ class Renderer(private var engine: Engine) {
         }
         if (!faces.contains(Face.North)) {
             engine.window.pushMatrix()
-            engine.window.fill(255F, 0F, 0F)
+//            engine.window.fill(255F, 0F, 0F)
             engine.window.beginShape()
             engine.window.vertex(x*100F+100, y*-100F, z*100F+100)
             engine.window.vertex(x*100F, y*-100F, z*100F+100)
@@ -46,7 +48,7 @@ class Renderer(private var engine: Engine) {
         }
         if (!faces.contains(Face.South)) {
             engine.window.pushMatrix()
-            engine.window.fill(0F, 255F, 0F)
+//            engine.window.fill(0F, 255F, 0F)
             engine.window.beginShape()
             engine.window.vertex(x*100F+100, y*-100F, z*100F)
             engine.window.vertex(x*100F, y*-100F, z*100F)
@@ -55,20 +57,9 @@ class Renderer(private var engine: Engine) {
             engine.window.endShape(PConstants.CLOSE)
             engine.window.popMatrix()
         }
-        if (!faces.contains(Face.East)) {
-            engine.window.pushMatrix()
-            engine.window.fill(0F, 0F, 255F)
-            engine.window.beginShape()
-            engine.window.vertex(x*100F+100, y*-100F, z*100F)
-            engine.window.vertex(x*100F+100, y*-100F, z*100F+100)
-            engine.window.vertex(x*100F+100, y*-100F+100, z*100F+100)
-            engine.window.vertex(x*100F+100, y*-100F+100, z*100F)
-            engine.window.endShape(PConstants.CLOSE)
-            engine.window.popMatrix()
-        }
         if (!faces.contains(Face.West)) {
             engine.window.pushMatrix()
-            engine.window.fill(255F, 0F, 255F)
+//            engine.window.fill(255F, 0F, 255F)
             engine.window.beginShape()
             engine.window.vertex(x*100F, y*-100F, z*100F)
             engine.window.vertex(x*100F, y*-100F, z*100F+100)
@@ -77,9 +68,20 @@ class Renderer(private var engine: Engine) {
             engine.window.endShape(PConstants.CLOSE)
             engine.window.popMatrix()
         }
+        if (!faces.contains(Face.East)) {
+            engine.window.pushMatrix()
+//            engine.window.fill(0F, 0F, 255F)
+            engine.window.beginShape()
+            engine.window.vertex(x*100F+100, y*-100F, z*100F)
+            engine.window.vertex(x*100F+100, y*-100F, z*100F+100)
+            engine.window.vertex(x*100F+100, y*-100F+100, z*100F+100)
+            engine.window.vertex(x*100F+100, y*-100F+100, z*100F)
+            engine.window.endShape(PConstants.CLOSE)
+            engine.window.popMatrix()
+        }
         if (!faces.contains(Face.Bottom)) {
             engine.window.pushMatrix()
-            engine.window.fill(255F, 255F, 0F)
+//            engine.window.fill(255F, 255F, 0F)
             engine.window.beginShape()
             engine.window.vertex(x*100F, y*-100F+100, z*100F)
             engine.window.vertex(x*100F+100, y*-100F+100, z*100F)
