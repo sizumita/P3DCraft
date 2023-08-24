@@ -4,13 +4,10 @@ import engine.Engine
 import processing.core.PApplet
 import processing.event.KeyEvent
 import processing.event.MouseEvent
-import java.awt.Robot
+
 
 class Runner : PApplet() {
     private var engine = Engine(this)
-
-    private var robot = Robot()
-
 
     override fun settings() {
         size(1280, 800, P3D)
@@ -19,8 +16,10 @@ class Runner : PApplet() {
     override fun setup() {
         engine.initialize()
         camera(0F, -4000F, 0F, 0F, 0F, 0F, -1F, 0F, 0F)
-        engine.world.putBlock(0, 31, 0, Block(BlockId.Dirt))
+        engine.world.putBlock(0, 31, 0, Block(BlockId.Stone))
         noCursor()
+//        textureWrap(CLAMP)
+        engine.window.textureMode(NORMAL)
     }
 
     override fun keyPressed(event: KeyEvent?) {

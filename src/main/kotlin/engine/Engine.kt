@@ -3,6 +3,7 @@ package engine
 import com.jogamp.newt.opengl.GLWindow
 import processing.core.PApplet
 import processing.core.PConstants
+import processing.core.PImage
 import processing.event.KeyEvent
 import processing.event.MouseEvent
 import java.awt.Robot
@@ -13,8 +14,16 @@ class Engine(var window: PApplet) {
     var player = Player(this)
     private var robot = Robot()
 
+    // TODO: windowに移行する
+    fun loadTexture(name: String): PImage {
+        val img = window.loadImage(name)
+        img.resize(1000, 1000)
+        return img
+    }
+
     fun initialize() {
         world.initialize()
+        renderer.initialize()
     }
 
     fun draw() {
