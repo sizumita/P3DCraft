@@ -2,7 +2,7 @@ package engine
 
 import com.jogamp.newt.opengl.GLWindow
 import processing.core.PApplet
-import processing.core.PVector
+import processing.core.PConstants
 import processing.event.KeyEvent
 import processing.event.MouseEvent
 import java.awt.Robot
@@ -10,16 +10,16 @@ import java.awt.Robot
 class Engine(var window: PApplet) {
     var world = World()
     private var renderer = Renderer(this)
-    private var player = Player(this)
-    var robot = Robot()
+    var player = Player(this)
+    private var robot = Robot()
 
     fun initialize() {
         world.initialize()
     }
 
     fun draw() {
-        renderer.renderWorld()
         player.update()
+        renderer.renderWorld()
     }
 
     fun keyPressed(event: KeyEvent) {
@@ -31,7 +31,14 @@ class Engine(var window: PApplet) {
     }
     fun mousePressed(event: MouseEvent) {
         val face = player.getLookingAt() ?: return
-        world.putBlockNextToFace(face.x, face.y, face.z, face.face, Block(BlockId.Bedrock))
+        val eyePosition = World.toWorldPosition(player.getEyePosition())
+        if ((face.getPosition() == eyePosition) or (face.getPosition().below() == eyePosition)) {
+            return
+        }
+        when (event.button) {
+            PConstants.LEFT -> world.removeBlock(face.x, face.y, face.z)
+            PConstants.RIGHT -> world.putBlockNextToFace(face.x, face.y, face.z, face.face, Block(BlockId.Bedrock))
+        }
     }
 
     fun mouseMoved(event: MouseEvent) {

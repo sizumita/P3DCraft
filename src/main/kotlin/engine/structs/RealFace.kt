@@ -16,6 +16,8 @@ data class RealFace(val x: Int, val y: Int, val z: Int, val face: Face) {
         Face.West -> PVector(-1F, 0F, 0F)
     }
 
+    fun getPosition() = Position(x, y, z)
+
     /**
      * 指定した座標がこの面の内側に存在するかどうかを取得します。
      */

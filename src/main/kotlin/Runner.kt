@@ -19,6 +19,8 @@ class Runner : PApplet() {
     override fun setup() {
         engine.initialize()
         camera(0F, -4000F, 0F, 0F, 0F, 0F, -1F, 0F, 0F)
+        engine.world.putBlock(0, 31, 0, Block(BlockId.Dirt))
+        noCursor()
     }
 
     override fun keyPressed(event: KeyEvent?) {
@@ -53,7 +55,6 @@ class Runner : PApplet() {
 //            robot.mouseMove(frame.x+(width/2), frame.y+(height/2))
 //        }
         background(0)
-        engine.world.putBlock(0, 31, 0, Block(BlockId.Dirt))
 //        engine.world.putBlock(0, 32, 0, Block(BlockId.Dirt))
 //        engine.world.putBlock(1, 31, 0, Block(BlockId.Dirt))
 //        engine.world.putBlock(0, 31, 1, Block(BlockId.Stone))

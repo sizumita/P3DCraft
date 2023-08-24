@@ -1,5 +1,6 @@
 package engine
 
+import engine.structs.Position
 import processing.core.PConstants
 import java.util.EnumSet
 
@@ -22,6 +23,13 @@ class Renderer(private var engine: Engine) {
             return
         }
         // TODO: テクスチャ
+        if (Position(x, y, z) == engine.player.lookingAt) {
+            engine.window.stroke(255)
+            engine.window.strokeWeight(2F)
+        } else {
+            engine.window.stroke(0)
+            engine.window.strokeWeight(0.5F)
+        }
         engine.window.fill(block.id.rgb.first, block.id.rgb.second, block.id.rgb.third)
 
         if (!faces.contains(Face.Top)) {

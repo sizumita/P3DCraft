@@ -1,5 +1,6 @@
 package engine
 
+import engine.structs.Position
 import engine.structs.RealFace
 import processing.core.PVector
 import java.util.EnumSet
@@ -10,6 +11,8 @@ class World {
         const val Y_LENGTH = 64
         const val Z_LENGTH = 64
         const val LOOK_LENGTH = 5
+
+        fun toWorldPosition(vector: PVector) = Position(vector.x.toInt()/100, vector.y.toInt()/(-100), vector.z.toInt()/100)
     }
     /**
      * x,y,zの順番の三次元配列。
@@ -58,35 +61,39 @@ class World {
         }
     }
 
+    fun removeBlock(x: Int, y: Int, z: Int) {
+        blocks[x][y][z] = Block(BlockId.Air)
+    }
+
     /**
      * 与えられた座標から見ることができる面で、x,y,zそれぞれ±LOOK_LENGTHにある面を返す
      */
-    fun getNearFaces(cx: Int, cy: Int, cz: Int): MutableList<RealFace> {
+    fun getNearFaces(p: Position): MutableList<RealFace> {
         val nearFaces = mutableListOf<RealFace>()
         // TODO この仕様だと、１ブロック超えた先に空洞があった場合そちらに置かれてしまう可能性がある。
-        for (x in (if (cx - LOOK_LENGTH < 0) 0 else cx-LOOK_LENGTH) until (if (cx+LOOK_LENGTH >= X_LENGTH) X_LENGTH else cx+LOOK_LENGTH)) {
-            for (y in (if (cy - LOOK_LENGTH < 0) 0 else cy-LOOK_LENGTH) until (if (cy+LOOK_LENGTH >= Y_LENGTH) Y_LENGTH else cy+LOOK_LENGTH)) {
-                for (z in (if (cz - LOOK_LENGTH < 0) 0 else cz-LOOK_LENGTH) until (if (cz+LOOK_LENGTH >= Z_LENGTH) Z_LENGTH else cz+LOOK_LENGTH)) {
+        for (x in (if (p.x - LOOK_LENGTH < 0) 0 else p.x-LOOK_LENGTH) until (if (p.x+LOOK_LENGTH >= X_LENGTH) X_LENGTH else p.x+LOOK_LENGTH)) {
+            for (y in (if (p.y - LOOK_LENGTH < 0) 0 else p.y-LOOK_LENGTH) until (if (p.y+LOOK_LENGTH >= Y_LENGTH) Y_LENGTH else p.y+LOOK_LENGTH)) {
+                for (z in (if (p.z - LOOK_LENGTH < 0) 0 else p.z-LOOK_LENGTH) until (if (p.z+LOOK_LENGTH >= Z_LENGTH) Z_LENGTH else p.z+LOOK_LENGTH)) {
                     if (blocks[x][y][z].id == BlockId.Air) continue
-//                    if ((x == cx) and (y == cy) and (z == cz)) continue
+//                    if ((x == p.x) and (y == p.y) and (z == p.z)) continue
                     val faces = getCovered(x, y, z)
                     when {
                         // 北側にあった場合
-                        (z < cz) and (!faces.contains(Face.South)) -> nearFaces.add(RealFace(x, y, z, Face.South))
+                        (z < p.z) and (!faces.contains(Face.South)) -> nearFaces.add(RealFace(x, y, z, Face.South))
                         // 南側にあった場合
-                        (z > cz) and (!faces.contains(Face.North)) -> nearFaces.add(RealFace(x, y, z, Face.North))
+                        (z > p.z) and (!faces.contains(Face.North)) -> nearFaces.add(RealFace(x, y, z, Face.North))
                     }
                     when {
                         // 東側にあった場合
-                        (x > cx) and (!faces.contains(Face.West)) -> nearFaces.add(RealFace(x, y, z, Face.West))
+                        (x > p.x) and (!faces.contains(Face.West)) -> nearFaces.add(RealFace(x, y, z, Face.West))
                         // 西側にあった場合
-                        (x < cx) and (!faces.contains(Face.East)) -> nearFaces.add(RealFace(x, y, z, Face.East))
+                        (x < p.x) and (!faces.contains(Face.East)) -> nearFaces.add(RealFace(x, y, z, Face.East))
                     }
                     when {
                         // 下側にあった場合
-                        (y < cy) and (!faces.contains(Face.Top)) -> nearFaces.add(RealFace(x, y, z, Face.Top))
+                        (y <= p.y) and (!faces.contains(Face.Top)) -> nearFaces.add(RealFace(x, y, z, Face.Top))
                         // 上側にあった場合
-                        (y > cy) and (!faces.contains(Face.Bottom)) -> nearFaces.add(RealFace(x, y, z, Face.Bottom))
+                        (y >= p.y) and (!faces.contains(Face.Bottom)) -> nearFaces.add(RealFace(x, y, z, Face.Bottom))
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package engine
 
 import engine.enums.Key
+import engine.structs.Position
 import engine.structs.RealFace
 import processing.core.PMatrix3D
 import processing.core.PVector
@@ -16,8 +17,9 @@ class Player(private val engine: Engine) {
     }
 
     private val pressedKeys = EnumSet.noneOf(Key::class.java)
+    public var lookingAt: Position? = null
 
-    fun unProject(): PVector? {
+    private fun unProject(): PVector? {
         val projection = (engine.window.g as PGraphics3D).projection
         val modelView = (engine.window.g as PGraphics3D).modelview
         val viewport = PMatrix3D()
@@ -48,7 +50,7 @@ class Player(private val engine: Engine) {
 
     fun getLookingAt(): RealFace? {
         val eye = getEyePosition()
-        val faces = engine.world.getNearFaces(eye.x.toInt() / 100, eye.y.toInt() / 100 * (-1), eye.z.toInt() / 100)
+        val faces = engine.world.getNearFaces(World.toWorldPosition(eye))
         val screenPoint = unProject() ?: return null
 
         val detectedFaces = mutableListOf<RealFace>()
@@ -117,6 +119,7 @@ class Player(private val engine: Engine) {
     }
 
     fun update() {
+        lookingAt = getLookingAt()?.getPosition()
         if (pressedKeys.isEmpty()) return
         val m = PMatrix3D()
         val speed = if (pressedKeys.contains(Key.Ctrl)) moveSpeed * 2 else moveSpeed
