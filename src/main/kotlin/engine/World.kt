@@ -101,6 +101,11 @@ class World {
         return nearFaces
     }
 
+    fun getBlock(position: Position): Block? {
+        if (!position.isInWorld()) return null
+        return blocks[position.x][position.y][position.z]
+    }
+
     /**
      * ブロックのうち、完全に覆われているところなどを描画しないため、カバーされている場所を取得する
      */

@@ -3,10 +3,10 @@ package engine
 import engine.enums.Key
 import engine.structs.Position
 import engine.structs.RealFace
+import processing.core.PConstants
 import processing.core.PMatrix3D
 import processing.core.PVector
 import processing.event.KeyEvent
-import processing.event.MouseEvent
 import processing.opengl.PGraphics3D
 import java.util.EnumSet
 
@@ -17,7 +17,8 @@ class Player(private val engine: Engine) {
     }
 
     private val pressedKeys = EnumSet.noneOf(Key::class.java)
-    public var lookingAt: Position? = null
+    var lookingAt: Position? = null
+    val inventory = Inventory(engine)
 
     private fun unProject(): PVector? {
         val projection = (engine.window.g as PGraphics3D).projection
@@ -48,6 +49,12 @@ class Player(private val engine: Engine) {
         return PVector(c.m03, c.m13, c.m23)
     }
 
+    fun getEyeVector(): PVector? {
+        val eye = getEyePosition()
+        val screenPoint = unProject() ?: return null
+        return screenPoint.sub(eye)
+    }
+
     fun getLookingAt(): RealFace? {
         val eye = getEyePosition()
         val faces = engine.world.getNearFaces(World.toWorldPosition(eye))
@@ -76,7 +83,6 @@ class Player(private val engine: Engine) {
             }
         }
         if (detectedFaces.isEmpty()) return null
-//        println("detected ${detectedFaces.size}")
         detectedFaces.sortBy {
             PVector(it.x.toFloat(), it.y.toFloat(), it.z.toFloat()).dist(eye)
         }
@@ -122,11 +128,12 @@ class Player(private val engine: Engine) {
         lookingAt = getLookingAt()?.getPosition()
         if (pressedKeys.isEmpty()) return
         val m = PMatrix3D()
-        val speed = if (pressedKeys.contains(Key.Ctrl)) moveSpeed * 2 else moveSpeed
+        val c0 = (engine.window.g as PGraphics3D).camera.get()
+        c0.invert()
+        val speed = if (pressedKeys.contains(Key.R)) moveSpeed * 2 else moveSpeed
 
         var moveToUp = false
         var moveToDown = false
-
         if (pressedKeys.contains(Key.W))
             m.translate(0f, 0f, speed)
         if (pressedKeys.contains(Key.S))
@@ -146,11 +153,26 @@ class Player(private val engine: Engine) {
         c.invert()
 
         val ex: Float = c.m03
-        val ey: Float = c.m13 + (if (moveToUp) (-10) else 0) + (if (moveToDown) (10) else 0)
+        var ey: Float = c0.m13 + (if (moveToUp) (-10) else 0) + (if (moveToDown) (10) else 0)
         val ez: Float = c.m23
         val cx: Float = -c.m02 + ex
-        val cy: Float = -c.m12 + ey
+        var cy: Float = -c0.m12 + ey
         val cz: Float = -c.m22 + ez
+
+        if (engine.world.getBlock(World.toWorldPosition(PVector(ex, ey, ez)))?.id != BlockId.Air) {
+//            if (pressedKeys.contains(Key.W) || pressedKeys.contains(Key.S)) {
+//                ex = c0.m03
+//                cx = -c0.m02 + ex
+//            }
+//            if (pressedKeys.contains(Key.A) || pressedKeys.contains(Key.D)) {
+//                ez = c0.m23
+//                cz = -c0.m22 + ez
+//            }
+            if (pressedKeys.contains(Key.Space) || pressedKeys.contains(Key.Shift)) {
+                ey = c0.m13
+                cy = -c0.m12 + ey
+            }
+        }
 
         engine.window.camera(ex, ey, ez, cx, cy, cz, 0f, 1f, 0f)
     }

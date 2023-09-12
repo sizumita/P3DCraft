@@ -7,56 +7,28 @@ import processing.event.MouseEvent
 
 
 class Runner : PApplet() {
-    private var engine = Engine(this)
+    private var engine = Engine()
 
     override fun settings() {
-        size(1280, 800, P3D)
+        size(600, 600)
     }
 
     override fun setup() {
-        engine.initialize()
-        camera(0F, -4000F, 0F, 0F, 0F, 0F, -1F, 0F, 0F)
-        engine.world.putBlock(0, 31, 0, Block(BlockId.Stone))
-        noCursor()
-//        textureWrap(CLAMP)
-        engine.window.textureMode(NORMAL)
+        noStroke()
+        fill(255)
+        rect(width/2F-100, 400F, 200F, 60F, 5F)
     }
 
-    override fun keyPressed(event: KeyEvent?) {
-        if (event == null || !focused) return;
-        engine.keyPressed(event)
-    }
-
-    override fun keyReleased(event: KeyEvent?) {
-        if (event == null || !focused) return;
-        engine.keyReleased(event)
-    }
-
-    override fun mouseMoved(event: MouseEvent?) {
-        if (event == null || !focused) return
-        engine.mouseMoved(event)
-    }
-
-    override fun mouseDragged(event: MouseEvent?) {
-        if (event == null || !focused) return
-        engine.mouseMoved(event)
-    }
-
-    override fun mousePressed(event: MouseEvent?) {
-        if (event == null || !focused) return
-        engine.mousePressed(event)
+    override fun mousePressed() {
+        println(mouseX)
+        println(mouseY)
+        if (width/2F-100 < mouseX && mouseX < width/2F+100 && 400 < mouseY && mouseY < 460) {
+            println("ok")
+            engine.start()
+        }
     }
 
     override fun draw() {
-//        if (frameCount == 10) {
-//            val frame = (getSurface().native as GLWindow)
-//            // 画面の中心にカーソルを合わせる処理。 NOTE: これにはアクセシビリティ機能の有効化が必要
-//            robot.mouseMove(frame.x+(width/2), frame.y+(height/2))
-//        }
-        background(0)
-//        engine.world.putBlock(0, 32, 0, Block(BlockId.Dirt))
-//        engine.world.putBlock(1, 31, 0, Block(BlockId.Dirt))
-//        engine.world.putBlock(0, 31, 1, Block(BlockId.Stone))
-        engine.draw()
+
     }
 }

@@ -7,6 +7,7 @@ enum class Key {
     S,
     A,
     D,
+    R,
     Up,
     Down,
     Left,
@@ -22,6 +23,7 @@ enum class Key {
                 's', 'S' -> S
                 'a', 'A' -> A
                 'd', 'D' -> D
+                'r', 'R' -> R
                 ' ' -> Space
                 else -> null
             }
