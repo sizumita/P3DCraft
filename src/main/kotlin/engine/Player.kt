@@ -113,7 +113,10 @@ class Player(private val engine: Engine) {
     fun keyPressed(event: KeyEvent) {
         var key = Key.fromKey(event.key)
         if (key == null) key = Key.fromKeyCode(event.keyCode)
-        if (key == null) return
+        if (key == null) {
+            inventory.keyPressed(event.key)
+            return
+        }
         pressedKeys.add(key)
     }
 
@@ -158,6 +161,10 @@ class Player(private val engine: Engine) {
         val cx: Float = -c.m02 + ex
         var cy: Float = -c0.m12 + ey
         val cz: Float = -c.m22 + ez
+
+        if (!World.toWorldPosition(PVector(ex, ey, ez)).isInWorld()) {
+            return
+        }
 
         if (engine.world.getBlock(World.toWorldPosition(PVector(ex, ey, ez)))?.id != BlockId.Air) {
 //            if (pressedKeys.contains(Key.W) || pressedKeys.contains(Key.S)) {

@@ -21,12 +21,14 @@ class World {
      * 参考: https://yoppa.org/proga10/1301.html
      */
     var blocks = Array(64) { Array(64) { Array(64) { Block(BlockId.Air) } } }
+    private var initialized = false
 
     /**
      * - y=0にbedrockを置く
      * - y=1~30にブロックを自動生成する
      */
     fun initialize() {
+        if (initialized) return
         for (x in 0 until X_LENGTH) {
             for (z in 0 until Z_LENGTH) {
                 blocks[x][0][z] = Block(BlockId.Bedrock)
@@ -44,6 +46,19 @@ class World {
                 }
             }
         }
+        initialized = true
+    }
+
+    fun initializeFromData(worldData: WorldData) {
+        worldData.blocks.forEachIndexed { ix, lists ->
+            // x
+            lists.forEachIndexed { iy, lists2 ->
+                lists2.forEachIndexed { iz, i ->
+                    blocks[ix][iy][iz] = Block(BlockId.fromId(i))
+                }
+            }
+        }
+        initialized = true
     }
 
     fun putBlock(x: Int, y: Int, z: Int, block: Block) {
@@ -119,37 +134,37 @@ class World {
         }
         // bottom
         if (y > 0) {
-            if (blocks[x][y-1][z].id !== BlockId.Air) {
+            if (!blocks[x][y-1][z].id.transmit) {
                 set.add(Face.Bottom)
             }
         }
         // top
         if (y < Y_LENGTH-1) {
-            if (blocks[x][y+1][z].id !== BlockId.Air) {
+            if (!blocks[x][y+1][z].id.transmit) {
                 set.add(Face.Top)
             }
         }
         // north
         if (z < Z_LENGTH-1) {
-            if (blocks[x][y][z+1].id !== BlockId.Air) {
+            if (!blocks[x][y][z+1].id.transmit) {
                 set.add(Face.South)
             }
         }
         // south
         if (z > 0) {
-            if (blocks[x][y][z-1].id !== BlockId.Air) {
+            if (!blocks[x][y][z-1].id.transmit) {
                 set.add(Face.North)
             }
         }
         // east
         if (x < X_LENGTH-1) {
-            if (blocks[x+1][y][z].id !== BlockId.Air) {
+            if (!blocks[x+1][y][z].id.transmit) {
                 set.add(Face.East)
             }
         }
         // west
         if (x > 0) {
-            if (blocks[x-1][y][z].id !== BlockId.Air) {
+            if (!blocks[x-1][y][z].id.transmit) {
                 set.add(Face.West)
             }
         }

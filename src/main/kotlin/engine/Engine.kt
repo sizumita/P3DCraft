@@ -1,6 +1,9 @@
 package engine
 
 import com.jogamp.newt.opengl.GLWindow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.core.PImage
@@ -10,16 +13,37 @@ import java.awt.Robot
 
 class Engine() {
     var world = World()
-    private var renderer = Renderer(this)
+    var renderer = Renderer(this)
     private var uiRenderer = UIRenderer(this)
     var player = Player(this)
     private var robot = Robot()
     var window = Window(this)
+    var textureManager: TextureManager? = null
     private var isStarted = false
+
+    companion object {
+        fun fromData(worldData: WorldData): Engine {
+            val engine = Engine()
+            engine.world.initializeFromData(worldData)
+            return engine
+        }
+    }
 
     fun start() {
         if (!isStarted) PApplet.runSketch(arrayOf("abc"), window)
         isStarted = true
+        runBlocking {
+            launch {
+                while (true) {
+                    delay(20 * 1000)
+                    save()
+                }
+            }
+        }
+    }
+
+    private fun save() {
+
     }
 
     // TODO: windowに移行する
@@ -31,7 +55,7 @@ class Engine() {
 
     fun initialize() {
         world.initialize()
-        renderer.initialize()
+        textureManager = TextureManager(this)
     }
 
     fun draw() {

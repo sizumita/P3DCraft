@@ -14,6 +14,7 @@ class UIRenderer(val engine: Engine) {
         )
         engine.window.hint(DISABLE_DEPTH_TEST)
         drawCrossHair()
+        drawInventory()
         engine.window.textSize(50F)
         engine.window.text("This is test.", 30F, 60F)
         engine.window.hint(ENABLE_DEPTH_TEST)
@@ -30,6 +31,23 @@ class UIRenderer(val engine: Engine) {
     }
 
     private fun drawInventory() {
+        engine.window.pushMatrix()
+        engine.window.noStroke()
+        engine.window.fill(133F, 130F, 130F)
+        val height = engine.window.height
+        val width = engine.window.width
+        engine.window.rect(width/2-360F, height-80F, 720F, 85F, 5F)
+        var offset = 0F
+        engine.player.inventory.blocks.forEach {
+            val tex = engine.textureManager?.getTexture(it, Face.Top) ?: return
+            if (it == engine.player.inventory.getSelectedBlockId()) {
+                engine.window.fill(255)
+                engine.window.rect(width/2-360F+offset-3F, height-80F-3F, 86F, 90F, 5F)
+            }
+            engine.window.image(tex, width/2-360F+offset+5, height-80F+5, 70F, 70F)
+            offset += 80F
+        }
 
+        engine.window.popMatrix()
     }
 }
