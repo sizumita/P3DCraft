@@ -1,6 +1,5 @@
 package engine
 
-import com.jogamp.opengl.GL
 import processing.core.PApplet
 import processing.event.KeyEvent
 import processing.event.MouseEvent
@@ -13,12 +12,12 @@ class Window(private val engine: Engine) : PApplet() {
 
     override fun setup() {
         engine.initialize()
-        camera(10F, -4000F, 10F, 0.5F, 0F, 0.5F, 0F, 1F, 0F)
+        camera(10F, -3500F, 10F, 0.5F, 0F, 0.5F, 0F, 1F, 0F)
         engine.world.putBlock(0, 31, 0, Block(BlockId.Stone))
         noCursor()
         textureMode(NORMAL)
-        // TODO: テクスチャどうにかする
-        (g as PGraphics3D).pgl.texParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST)
+        // NOTE: これでどうにかなった
+        (g as PGraphics3D).textureSampling(2)
     }
 
     override fun keyPressed(event: KeyEvent?) {

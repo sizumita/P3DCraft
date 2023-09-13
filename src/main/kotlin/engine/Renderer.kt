@@ -35,7 +35,6 @@ class Renderer(private var engine: Engine) {
             engine.window.stroke(0)
             engine.window.strokeWeight(0.5F)
         }
-
         if (!faces.contains(Face.Top)) {
             engine.window.pushMatrix()
             engine.window.beginShape()

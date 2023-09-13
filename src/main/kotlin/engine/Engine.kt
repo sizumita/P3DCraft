@@ -9,7 +9,9 @@ import processing.core.PConstants
 import processing.core.PImage
 import processing.event.KeyEvent
 import processing.event.MouseEvent
+import processing.opengl.PGraphics3D
 import java.awt.Robot
+import java.nio.IntBuffer
 
 class Engine() {
     var world = World()
@@ -48,9 +50,7 @@ class Engine() {
 
     // TODO: windowに移行する
     fun loadTexture(name: String): PImage {
-        val img = window.loadImage(name)
-        img.resize(1000, 1000)
-        return img
+        return window.loadImage(name)
     }
 
     fun initialize() {
